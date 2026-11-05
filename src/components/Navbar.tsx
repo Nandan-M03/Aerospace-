@@ -1,17 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  PencilSimple,
-  Check,
+  LockKey,
+  LockKeyOpen,
   ArrowsClockwise,
   DownloadSimple,
   UploadSimple,
-  AirplaneTilt
+  MagnifyingGlass,
+  CaretDown,
+  X,
+  List,
+  AirplaneTakeoff,
+  Rocket,
+  ShieldCheck
 } from '@phosphor-icons/react';
 import { PortfolioSection } from '../types/portfolio';
 
 interface NavbarProps {
   editMode: boolean;
-  onToggleEditMode: () => void;
+  isAuthenticated: boolean;
+  onTriggerEditMode: () => void;
+  onLockSession: () => void;
   sections: PortfolioSection[];
   onResetData: () => void;
   onExportData: () => void;
@@ -20,60 +28,205 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   editMode,
-  onToggleEditMode,
+  isAuthenticated,
+  onTriggerEditMode,
+  onLockSession,
   sections,
   onResetData,
   onExportData,
   onImportData,
 }) => {
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [flightDropdownOpen, setFlightDropdownOpen] = useState(false);
+  const [spaceDropdownOpen, setSpaceDropdownOpen] = useState(false);
+  const [activeNav, setActiveNav] = useState('home');
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
+      setMobileMenuOpen(false);
+      setFlightDropdownOpen(false);
+      setSpaceDropdownOpen(false);
     }
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    const query = searchQuery.toLowerCase();
+    const matchedSec = sections.find(
+      (s) =>
+        s.title.toLowerCase().includes(query) ||
+        s.projects.some(
+          (p) =>
+            p.title.toLowerCase().includes(query) ||
+            p.summary.toLowerCase().includes(query) ||
+            p.tags.some((t) => t.toLowerCase().includes(query))
+        )
+    );
+    if (matchedSec) {
+      scrollToSection(matchedSec.id);
+      setSearchOpen(false);
+    } else {
+      alert(`No results matching "${searchQuery}" found.`);
+    }
+  };
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.nav-dropdown-container')) {
+        setFlightDropdownOpen(false);
+        setSpaceDropdownOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-[#080C14]/90 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand / Callsign */}
-        <div className="flex items-center space-x-3">
-          <div className="h-9 w-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-            <AirplaneTilt size={20} weight="bold" />
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-heading font-bold text-slate-100 tracking-wider text-sm sm:text-base">
-                NANDAN M.
-              </span>
-              <span className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono-tech uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded">
-                AERO // DSCE
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-400 font-mono-tech hidden sm:block">
-              Dayananda Sagar College of Engineering
-            </p>
-          </div>
+    <header className="sticky top-0 z-40 w-full border-b border-slate-800/60 bg-[#000000]/90 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+
+        {/* Brand without leftside icon */}
+        <div
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setActiveNav('home');
+          }}
+          className="cursor-pointer shrink-0 space-y-0.5"
+        >
+          <span className="font-heading font-extrabold text-white tracking-wider text-base sm:text-lg block">
+            NANDAN M.
+          </span>
+          <p className="text-[11px] text-slate-400 font-mono-tech hidden sm:block leading-tight">
+            Aerospace Engineering Scholar
+          </p>
         </div>
 
-        {/* Section Navigation Quick Links */}
-        <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
-          {sections.map((sec) => (
+        {/* Center Navigation Pill Group (Matching Reference) */}
+          <nav className="hidden lg:flex items-center space-x-1 p-1 bg-slate-900/80 border border-slate-800 rounded-none text-xs font-mono-tech nav-dropdown-container">
             <button
-              key={sec.id}
-              onClick={() => scrollToSection(sec.id)}
-              className="px-2.5 py-1 text-xs font-mono-tech text-slate-400 hover:text-amber-400 hover:bg-slate-800/50 rounded transition-colors"
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setActiveNav('home');
+              }}
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+                  }`}
+          >
+            Home
+          </button>
+          
+          <button
+            onClick={() => {
+              scrollToSection('sec-projects-all');
+              setActiveNav('projects');
+            }}
+              className = {`px-3.5 py-1.5 rounded-none transition-colors cursor-pointer ${activeNav === 'projects'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+                }`}
+          >
+            Projects
+          </button>
+
+          <button
+            onClick={() => {
+              scrollToSection('sec-research-archive');
+              setActiveNav('research');
+            }}
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+                }`}
+          >
+            Research
+          </button>
+
+          {/* Flight Systems Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setFlightDropdownOpen(!flightDropdownOpen);
+                setSpaceDropdownOpen(false);
+              }}
+              className="px-3.5 py-1.5 rounded-none text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors inline-flex items-center space-x-1 cursor-pointer"
             >
-              {sec.title}
+              <span>Flight Systems</span>
+              <CaretDown size={12} className={`transition-transform ${flightDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
-          ))}
+
+            {flightDropdownOpen && (
+              <div className="absolute left-0 mt-2 w-56 rounded-none bg-[#080808] border border-slate-700/80 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <button
+                  onClick={() => scrollToSection('sec-fighter-jets')}
+                  className="w-full text-left px-4 py-2 text-xs text-slate-300 hover:text-cyan-300 hover:bg-slate-900 flex items-center space-x-2"
+                >
+                  <AirplaneTakeoff size={14} className="text-cyan-400" />
+                  <span>Fighter Jets & Combat</span>
+                </button>
+                <button
+                  onClick={() => scrollToSection('sec-drones')}
+                  className="w-full text-left px-4 py-2 text-xs text-slate-300 hover:text-emerald-300 hover:bg-slate-900 flex items-center space-x-2"
+                >
+                  <AirplaneTakeoff size={14} className="text-emerald-400" />
+                  <span>Multirotor Drones</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Space Systems Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setSpaceDropdownOpen(!spaceDropdownOpen);
+                setFlightDropdownOpen(false);
+              }}
+              className="px-3.5 py-1.5 rounded-none text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors inline-flex items-center space-x-1 cursor-pointer"
+            >
+              <span>Space Systems</span>
+              <CaretDown size={12} className={`transition-transform ${spaceDropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {spaceDropdownOpen && (
+              <div className="absolute left-0 mt-2 w-60 rounded-none bg-[#080808] border border-slate-700/80 shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <button
+                  onClick={() => scrollToSection('sec-uavs')}
+                  className="w-full text-left px-4 py-2 text-xs text-slate-300 hover:text-purple-300 hover:bg-slate-900 flex items-center space-x-2"
+                >
+                  <Rocket size={14} className="text-purple-400" />
+                  <span>Tactical UAVs & High-Altitude</span>
+                </button>
+                <button
+                  onClick={() => scrollToSection('sec-others')}
+                  className="w-full text-left px-4 py-2 text-xs text-slate-300 hover:text-amber-300 hover:bg-slate-900 flex items-center space-x-2"
+                >
+                  <Rocket size={14} className="text-amber-400" />
+                  <span>Solid Rocketry & Hypersonics</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={() => {
+              scrollToSection('sec-about-nandan');
+              setActiveNav('about');
+            }}
+            className="px-3.5 py-1.5 rounded-none text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer"
+          >
+            Archive
+          </button>
         </nav>
 
-        {/* Actions & Edit Mode Toggle */}
+        {/* Right Actions: Search + Master "NANDAN EDIT" Button */}
         <div className="flex items-center space-x-2 sm:space-x-3">
-          {/* Hidden File Input for JSON Restore */}
           <input
             type="file"
             ref={fileInputRef}
@@ -82,54 +235,180 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="hidden"
           />
 
+          {/* Quick Search Button / Input */}
+          <div className="relative">
+            {searchOpen ? (
+              <form onSubmit={handleSearchSubmit} className="flex items-center">
+                <input
+                  type="text"
+                  autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search flight telemetry…"
+                  className="w-40 sm:w-56 bg-slate-900 border border-slate-700 rounded-none px-3 py-1.5 text-base sm:text-xs text-slate-100 font-mono-tech focus:outline-none focus:border-blue-400"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(false)}
+                  className="p-1.5 text-slate-400 hover:text-white ml-1"
+                >
+                  <X size={15} />
+                </button>
+              </form>
+            ) : (
+              <button
+                onClick={() => setSearchOpen(true)}
+                title="Search aerospace projects"
+                className="w-9 h-9 rounded-none bg-slate-900/90 border border-slate-800 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-700 transition-colors cursor-pointer"
+              >
+                <MagnifyingGlass size={16} />
+              </button>
+            )}
+          </div>
+
+          {/* Edit Mode Administrative Controls */}
           {editMode && (
-            <div className="flex items-center space-x-1 border-r border-slate-800 pr-2">
+            <div className="hidden sm:flex items-center space-x-1 border-r border-slate-800 pr-2">
               <button
                 onClick={() => fileInputRef.current?.click()}
                 title="Import / Restore Portfolio Data"
-                className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded transition-colors"
+                className="w-8 h-8 rounded-none skeuo-button flex items-center justify-center text-slate-400 hover:text-slate-100 cursor-pointer"
               >
-                <UploadSimple size={16} />
+                <UploadSimple size={15} />
               </button>
               <button
                 onClick={onExportData}
                 title="Export / Backup Portfolio Data"
-                className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded transition-colors"
+                className="w-8 h-8 rounded-none skeuo-button flex items-center justify-center text-slate-400 hover:text-slate-100 cursor-pointer"
               >
-                <DownloadSimple size={16} />
+                <DownloadSimple size={15} />
               </button>
               <button
                 onClick={onResetData}
                 title="Reset to Original Defaults"
-                className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                className="w-8 h-8 rounded-none skeuo-button flex items-center justify-center text-slate-400 hover:text-red-400 cursor-pointer"
               >
-                <ArrowsClockwise size={16} />
+                <ArrowsClockwise size={15} />
+              </button>
+              <button
+                onClick={onLockSession}
+                title="Lock Terminal"
+                className="px-2.5 py-1 rounded-none skeuo-button text-red-400 text-xs font-mono-tech cursor-pointer"
+              >
+                Lock
               </button>
             </div>
           )}
 
-          {/* Edit Mode Master Switch */}
+          {/* Master "NANDAN EDIT" Button (Clean, Non-Glowing) */}
           <button
-            onClick={onToggleEditMode}
-            className={`inline-flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-mono-tech font-semibold transition-all border ${editMode
-                ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
-                : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-amber-500/50 hover:text-amber-300'
-              }`}
+            onClick={onTriggerEditMode}
+                  ? 'bg-blue-600 text-white border-blue-400'
+                  : 'bg-slate-900/90 text-slate-200 border-slate-700 hover:border-slate-500'
+                }`}
           >
             {editMode ? (
               <>
-                <Check size={14} weight="bold" />
-                <span>EDITING ACTIVE</span>
+                <LockKeyOpen size={15} weight="bold" />
+                <span className="tracking-wider">EDITING ARMED</span>
+              </>
+            ) : isAuthenticated ? (
+              <>
+                <ShieldCheck size={15} weight="bold" className="text-emerald-400" />
+                <span className="tracking-wider">NANDAN EDIT</span>
               </>
             ) : (
               <>
-                <PencilSimple size={14} weight="bold" />
-                <span>EDIT PORTFOLIO</span>
+                <LockKey size={15} weight="bold" className="text-blue-400" />
+                <span className="tracking-wider">NANDAN EDIT</span>
               </>
             )}
           </button>
+
+          {/* Mobile Navigation Menu Toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden w-9 h-9 rounded-none bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:text-white"
+            aria-label="Toggle navigation menu"
+          >
+            {mobileMenuOpen ? <X size={18} /> : <List size={18} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Drawer Navigation */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden border-t border-slate-800 bg-[#000000] px-4 py-4 space-y-2 font-mono-tech text-xs">
+          <button
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setMobileMenuOpen(false);
+            }}
+            className="w-full text-left px-3 py-2 rounded-none bg-blue-600 text-white font-bold"
+          >
+            Home
+          </button>
+          <button
+            onClick={() => scrollToSection('sec-projects-all')}
+            className="w-full text-left px-3 py-2 rounded-none text-slate-300 hover:bg-slate-800"
+          >
+            Projects
+          </button>
+          <button
+            onClick={() => scrollToSection('sec-research-archive')}
+            className="w-full text-left px-3 py-2 rounded-none text-slate-300 hover:bg-slate-800"
+          >
+            Research
+          </button>
+          <div className="pt-2 pb-1 border-t border-slate-800 text-[10px] text-slate-500 uppercase tracking-widest px-3">
+            Flight Systems
+          </div>
+          <button
+            onClick={() => scrollToSection('sec-fighter-jets')}
+            className="w-full text-left px-5 py-1.5 text-slate-300 hover:text-cyan-300"
+          >
+            Fighter Jets & Combat
+          </button>
+          <button
+            onClick={() => scrollToSection('sec-drones')}
+            className="w-full text-left px-5 py-1.5 text-slate-300 hover:text-emerald-300"
+          >
+            Multirotor Drones
+          </button>
+          <div className="pt-2 pb-1 border-t border-slate-800 text-[10px] text-slate-500 uppercase tracking-widest px-3">
+            Space Systems
+          </div>
+          <button
+            onClick={() => scrollToSection('sec-uavs')}
+            className="w-full text-left px-5 py-1.5 text-slate-300 hover:text-purple-300"
+          >
+            Tactical UAVs
+          </button>
+          <button
+            onClick={() => scrollToSection('sec-others')}
+            className="w-full text-left px-5 py-1.5 text-slate-300 hover:text-amber-300"
+          >
+            Solid Rocketry & Hypersonics
+          </button>
+          <button
+            onClick={() => scrollToSection('sec-about-nandan')}
+            className="w-full text-left px-3 py-2 rounded-none text-slate-300 hover:bg-slate-800 border-t border-slate-800"
+          >
+            Archive & Scholar Bio
+          </button>
+          {editMode && (
+            <div className="pt-2 flex items-center justify-between border-t border-slate-800 px-3">
+              <span className="text-amber-400">Terminal Unlocked</span>
+              <button
+                onClick={onLockSession}
+                className="px-2.5 py-1 bg-red-500/20 text-red-400 rounded-none border border-red-500/40"
+              >
+                Lock Terminal
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 };

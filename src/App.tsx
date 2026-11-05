@@ -15,14 +15,23 @@ import {
 import { createSamplePdfDataUri } from './data/initialData';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
+import { SystemsShowcaseSection } from './components/SystemsShowcaseSection';
 import { ProjectSection } from './components/ProjectSection';
+import { ResearchSection } from './components/ResearchSection';
+import { AboutSection } from './components/AboutSection';
+import { ContactSection } from './components/ContactSection';
 import { PdfPreviewModal } from './components/PdfPreviewModal';
 import { EditProjectModal } from './components/EditProjectModal';
-import { Plus, GithubLogo, LinkedinLogo, EnvelopeSimple, ArrowUp } from '@phosphor-icons/react';
+import { AuthModal } from './components/AuthModal';
+import { Plus, GithubLogo, LinkedinLogo, EnvelopeSimple, ArrowUp, LockKey } from '@phosphor-icons/react';
 
 export default function App() {
   const [data, setData] = useState<PortfolioData>(loadPortfolioData);
   const [editMode, setEditMode] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return typeof window !== 'undefined' && sessionStorage.getItem('nandan_aerospace_auth') === 'true';
+  });
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   // PDF Preview Modal state
   const [previewState, setPreviewState] = useState<{
@@ -53,6 +62,26 @@ export default function App() {
   useEffect(() => {
     savePortfolioData(data);
   }, [data]);
+
+  // Handle Master Edit Mode Trigger (Checks password if not authenticated)
+  const handleTriggerEditMode = () => {
+    if (isAuthenticated) {
+      setEditMode(!editMode);
+    } else {
+      setAuthModalOpen(true);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setIsAuthenticated(true);
+    setEditMode(true);
+  };
+
+  const handleLockSession = () => {
+    sessionStorage.removeItem('nandan_aerospace_auth');
+    setIsAuthenticated(false);
+    setEditMode(false);
+  };
 
   // Section Reordering handlers
   const handleMoveSectionUp = (index: number) => {
@@ -108,7 +137,7 @@ export default function App() {
       }
     }
 
-    // If no custom uploaded PDF yet, generate live formatted sample PDF
+    // Fallback minimal PDF structure
     if (!url) {
       url = createSamplePdfDataUri(project.title, project.codename || 'AEROSPACE RESEARCH');
     }
@@ -125,6 +154,10 @@ export default function App() {
 
   // Project Add / Edit handlers
   const handleOpenAddProject = (sectionId: string) => {
+    if (!isAuthenticated) {
+      setAuthModalOpen(true);
+      return;
+    }
     const newProj: Project = {
       id: `proj-${Date.now()}`,
       title: 'New Aeronautical Investigation',
@@ -145,6 +178,10 @@ export default function App() {
   };
 
   const handleOpenEditProject = (project: Project, sectionId: string) => {
+    if (!isAuthenticated) {
+      setAuthModalOpen(true);
+      return;
+    }
     setEditingProjectState({
       isOpen: true,
       project,
@@ -169,6 +206,10 @@ export default function App() {
   };
 
   const handleDeleteProject = (projectId: string, sectionId: string) => {
+    if (!isAuthenticated) {
+      setAuthModalOpen(true);
+      return;
+    }
     if (!confirm('Are you sure you want to delete this project?')) return;
     const updatedSections = data.sections.map((section) => {
       if (section.id !== sectionId) return section;
@@ -194,6 +235,10 @@ export default function App() {
 
   // Reset & Export/Import handlers
   const handleResetData = () => {
+    if (!isAuthenticated) {
+      setAuthModalOpen(true);
+      return;
+    }
     if (confirm('Reset portfolio to initial defaults? All manual edits will be reverted.')) {
       const reset = resetPortfolioData();
       setData(reset);
@@ -214,6 +259,10 @@ export default function App() {
   };
 
   const handleImportData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isAuthenticated) {
+      setAuthModalOpen(true);
+      return;
+    }
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
@@ -238,12 +287,24 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSelectCategory = (secId: string) => {
+    const target = document.getElementById(secId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      const first = document.getElementById('sec-projects-all');
+      if (first) first.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#080C14] text-slate-100 selection:bg-amber-500/30 selection:text-amber-200">
-      {/* Top Navbar */}
+    <div className="min-h-screen flex flex-col bg-[#000000] text-slate-100 selection:bg-blue-500/30 selection:text-blue-200">
+      {/* Top Floating Navbar */}
       <Navbar
         editMode={editMode}
-        onToggleEditMode={() => setEditMode(!editMode)}
+        isAuthenticated={isAuthenticated}
+        onTriggerEditMode={handleTriggerEditMode}
+        onLockSession={handleLockSession}
         sections={data.sections}
         onResetData={handleResetData}
         onExportData={handleExportData}
@@ -252,69 +313,102 @@ export default function App() {
 
       {/* Edit Mode Notice Banner */}
       {editMode && (
-        <div className="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-mono-tech font-bold text-center tracking-wide flex items-center justify-center space-x-2">
-          <span>// EDIT MODE ARMED: Click on any section arrows (↑ / ↓) to reorder, edit titles, update quotes, or upload PDFs.</span>
+        <div className="skeuo-panel border-b border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-xs font-mono-tech text-amber-300 flex items-center justify-between sticky top-18 z-30 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 rounded-none led-armed" />
+              <span className="font-bold tracking-wider">
+                EDIT TERMINAL UNLOCKED (Nandan M.) &bull; Click arrows (↑ / ↓) to reorder, edit titles, update quotes, or upload PDFs.
+              </span>
+            </div>
+            <button
+              onClick={handleLockSession}
+              className="skeuo-button px-3 py-1 rounded-none text-slate-300 hover:text-red-400 text-[11px] inline-flex items-center space-x-1.5 shrink-0 ml-3 cursor-pointer uppercase"
+            >
+              <LockKey size={13} />
+              <span>Lock Terminal</span>
+            </button>
+          </div>
         </div>
       )}
 
       {/* Main Content */}
       <main className="flex-1">
-        {/* Hero Section: Aerospace manifesto, quotes & student identity */}
+        {/* Spectacular 88-95vh Cinematic Hero Section */}
         <HeroSection
           profile={data.profile}
           quotes={data.quotes}
           editMode={editMode}
           onUpdateProfile={handleUpdateProfile}
           onUpdateQuotes={handleUpdateQuotes}
+          onScrollToProjects={() => {
+            const first = document.getElementById('sec-projects-all');
+            if (first) first.scrollIntoView({ behavior: 'smooth' });
+          }}
         />
 
-        {/* Dynamic Project Sections: Fighter Jets, Drones, UAVs, Others */}
-        <div className="space-y-0">
-          {data.sections.map((section, index) => (
-            <ProjectSection
-              key={section.id}
-              section={section}
-              index={index}
-              totalSections={data.sections.length}
-              editMode={editMode}
-              onMoveUp={handleMoveSectionUp}
-              onMoveDown={handleMoveSectionDown}
-              onUpdateSection={handleUpdateSection}
-              onDeleteSection={handleDeleteSection}
-              onPreviewPdf={handleOpenPdfPreview}
-              onEditProject={handleOpenEditProject}
-              onDeleteProject={handleDeleteProject}
-              onAddProject={handleOpenAddProject}
-            />
-          ))}
+        {/* Dedicated Aerospace Systems Showcase (Spacious & Decoupled from Hero) */}
+        <SystemsShowcaseSection onSelectCategory={handleSelectCategory} />
+
+        {/* Anchor for Projects Navigation */}
+        <div id="sec-projects-all" className="scroll-mt-24">
+          {/* Dynamic Project Sections: Fighter Jets, Drones, UAVs, Space Systems */}
+          <div className="space-y-0">
+            {data.sections.map((section, index) => (
+              <ProjectSection
+                key={section.id}
+                section={section}
+                index={index}
+                totalSections={data.sections.length}
+                editMode={editMode}
+                onMoveUp={handleMoveSectionUp}
+                onMoveDown={handleMoveSectionDown}
+                onUpdateSection={handleUpdateSection}
+                onDeleteSection={handleDeleteSection}
+                onPreviewPdf={handleOpenPdfPreview}
+                onEditProject={handleOpenEditProject}
+                onDeleteProject={handleDeleteProject}
+                onAddProject={handleOpenAddProject}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Add New Section Button in Edit Mode */}
         {editMode && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
             <button
               onClick={handleAddNewSection}
-              className="inline-flex items-center space-x-2 px-6 py-3 border-2 border-dashed border-slate-700 hover:border-amber-500/60 rounded-xl text-slate-300 hover:text-amber-400 font-mono-tech text-xs tracking-wider transition-colors"
+              className="btn-afterburner-blue inline-flex items-center space-x-2 px-7 py-4 rounded-none text-white font-mono-tech text-xs tracking-wider cursor-pointer uppercase font-bold"
             >
               <Plus size={16} weight="bold" />
               <span>ADD CUSTOM AEROSPACE SECTION</span>
             </button>
           </div>
         )}
+
+        {/* Research Archive Section */}
+        <ResearchSection />
+
+        {/* About Nandan M. Dossier Section */}
+        <AboutSection profile={data.profile} />
+
+        {/* Contact & Telemetry Link Section */}
+        <ContactSection profile={data.profile} />
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800 bg-[#06090F] py-12 text-slate-400 font-mono-tech text-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-1 text-center md:text-left">
-            <p className="font-heading text-sm font-bold text-slate-200">
+      {/* Minimalist Cinematic Aerospace Footer */}
+      <footer className="border-t border-slate-800/80 bg-[#000000] py-16 text-slate-400 font-mono-tech text-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="space-y-2 text-center md:text-left">
+            <p className="font-heading text-base font-bold text-slate-200">
               {data.profile.name} // AEROSPACE ENGINEERING
             </p>
-            <p className="text-slate-500 text-[11px]">
+            <p className="text-slate-400 text-xs">
               {data.profile.institution} &bull; {data.profile.department}
             </p>
-            <p className="text-slate-600 text-[10px]">
-              Ready for direct GitHub Pages static hosting
+            <p className="text-slate-400 text-[11px]">
+              Dayananda Sagar College of Engineering, Bengaluru &bull; Client-Side Encrypted Terminal
             </p>
           </div>
 
@@ -322,7 +416,7 @@ export default function App() {
             {data.profile.email && (
               <a
                 href={`mailto:${data.profile.email}`}
-                className="p-2 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/30 transition-colors"
+                className="w-10 h-10 rounded-none bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:text-blue-400 hover:border-slate-700 transition-all"
                 title="Email Nandan"
               >
                 <EnvelopeSimple size={18} />
@@ -333,7 +427,7 @@ export default function App() {
                 href={data.profile.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="p-2 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/30 transition-colors"
+                className="w-10 h-10 rounded-none bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:text-blue-400 hover:border-slate-700 transition-all"
                 title="LinkedIn Profile"
               >
                 <LinkedinLogo size={18} />
@@ -344,7 +438,7 @@ export default function App() {
                 href={data.profile.github}
                 target="_blank"
                 rel="noreferrer"
-                className="p-2 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/30 transition-colors"
+                className="w-10 h-10 rounded-none bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:text-blue-400 hover:border-slate-700 transition-all"
                 title="GitHub"
               >
                 <GithubLogo size={18} />
@@ -353,13 +447,20 @@ export default function App() {
             <button
               onClick={scrollToTop}
               title="Return to Top"
-              className="p-2 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/30 transition-colors"
+              className="w-10 h-10 rounded-none bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-300 hover:text-blue-400 hover:border-slate-700 transition-all cursor-pointer"
             >
               <ArrowUp size={18} />
             </button>
           </div>
         </div>
       </footer>
+
+      {/* Password Authorization Keypad Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onSuccess={handleAuthSuccess}
+      />
 
       {/* PDF Interactive Preview Modal */}
       <PdfPreviewModal

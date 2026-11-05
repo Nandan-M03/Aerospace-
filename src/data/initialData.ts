@@ -91,7 +91,7 @@ export const initialPortfolioData: PortfolioData = {
     },
     {
       id: 'q4',
-      text: 'Mystery creates wonder and wonder is the basis of mans desire to understand.',
+      text: "Mystery creates wonder and wonder is the basis of man's desire to understand.",
       author: 'Neil Armstrong',
       affiliation: 'Aeronautical Engineer & Apollo 11 Commander',
     },
@@ -116,14 +116,14 @@ export const initialPortfolioData: PortfolioData = {
           tags: ['CFD', 'Delta Wing', 'Compressible Flow', 'OpenFOAM', 'Mach 0.85'],
           specs: [
             { label: 'Wing Sweep', value: '52.5° Compound' },
-            { label: 'Mach Regime', value: 'Mach 0.3 - 1.4' },
+            { label: 'Mach Regime', value: 'Mach 0.3–1.4' },
             { label: 'Critical AoA', value: '38° Vortex Stall' },
             { label: 'Software', value: 'OpenFOAM / Ansys Fluent' },
           ],
           pdfName: 'LCA_DeltaWing_Vortex_Breakdown_Report.pdf',
           pdfDataId: 'sample-pdf-fj1',
           pdfSize: '1.4 MB',
-          date: '2025 - 2026',
+          date: '2025–2026',
         },
         {
           id: 'fj-2',
@@ -162,7 +162,7 @@ export const initialPortfolioData: PortfolioData = {
           summary:
             'Custom 960mm carbon-fiber airframe designed for 8kg payload capacity with real-time center-of-gravity compensation and telemetry logging.',
           details:
-            'Implemented custom ArduPilot firmware extensions with Kalman filter sensory fusion across dual IMUs, optical flow, and RTK GNSS for precision hovering within +/- 2.5cm.',
+            'Implemented custom ArduPilot firmware extensions with Kalman filter sensory fusion across dual IMUs, optical flow, and RTK GNSS for precision hovering within ±2.5 cm.',
           tags: ['Hexacopter', 'LQR Control', 'Pixhawk', 'RTK-GNSS', 'Sensory Fusion'],
           specs: [
             { label: 'Wheelbase', value: '960 mm' },
@@ -173,7 +173,7 @@ export const initialPortfolioData: PortfolioData = {
           pdfName: 'Hexacopter_Adaptive_Control_Paper.pdf',
           pdfDataId: 'sample-pdf-dr1',
           pdfSize: '3.6 MB',
-          date: '2025 - 2026',
+          date: '2025–2026',
         },
         {
           id: 'dr-2',
@@ -223,7 +223,7 @@ export const initialPortfolioData: PortfolioData = {
           pdfName: 'Solar_UAV_Aerodynamics_FlightTest.pdf',
           pdfDataId: 'sample-pdf-uav1',
           pdfSize: '4.2 MB',
-          date: '2025 - 2026',
+          date: '2025–2026',
         },
         {
           id: 'uav-2',
@@ -232,7 +232,7 @@ export const initialPortfolioData: PortfolioData = {
           summary:
             'Aerodynamic transition simulation for a quad-tilt-rotor hybrid UAV bridging vertical takeoff hover to aerodynamic wing-borne cruise.',
           details:
-            'Addressed stall margins during corridor transition at 12-16 m/s using active flap deflection scheduling and differential motor tilt angle rate limiters.',
+            'Addressed stall margins during corridor transition at 12–16 m/s using active flap deflection scheduling and differential motor tilt angle rate limiters.',
           tags: ['VTOL', 'Transition Corridor', 'Tilt-Rotor', 'Flight Dynamics'],
           specs: [
             { label: 'MTOW', value: '6.5 kg' },
@@ -273,7 +273,7 @@ export const initialPortfolioData: PortfolioData = {
           pdfName: 'Solid_Rocket_Ballistics_Static_Fire.pdf',
           pdfDataId: 'sample-pdf-oth1',
           pdfSize: '3.1 MB',
-          date: '2024 - 2025',
+          date: '2024–2025',
         },
         {
           id: 'oth-2',

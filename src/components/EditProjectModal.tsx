@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { 
-  X, 
-  FilePdf, 
-  UploadSimple, 
-  Plus, 
-  Trash, 
+import {
+  X,
+  FilePdf,
+  UploadSimple,
+  Plus,
+  Trash,
   FloppyDisk,
   WarningCircle
 } from '@phosphor-icons/react';
@@ -64,7 +64,6 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
     try {
       setIsUploading(true);
       const generatedId = `pdf-${project.id}-${Date.now()}`;
-      // Save directly to IndexedDB
       await savePdfToStorage(generatedId, file, file.name);
 
       const sizeFormatted = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
@@ -99,31 +98,31 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div 
-        className="relative w-full max-w-2xl bg-[#0F172A] border border-slate-700 rounded-xl shadow-2xl p-6 text-slate-100 my-8"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in">
+      <div
+        className="relative w-full max-w-2xl skeuo-panel rounded-none border-2 border-slate-700 p-6 sm:p-7 text-slate-100 shadow-2xl my-8"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
           <div className="flex items-center space-x-2">
             <span className="font-mono-tech text-amber-400 font-bold text-xs uppercase tracking-wider">
               SPECIFICATION EDITOR
             </span>
-            <span className="text-slate-400">&bull;</span>
-            <span className="text-xs text-slate-300 font-mono-tech truncate">{project.title}</span>
+            <span className="text-slate-500">&bull;</span>
+            <span className="text-xs text-slate-300 font-mono-tech truncate max-w-[200px]">{project.title}</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800"
+            className="w-7 h-7 rounded-none skeuo-button flex items-center justify-center text-slate-400 hover:text-white"
           >
-            <X size={18} />
+            <X size={15} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono-tech text-slate-300 mb-1">
+              <label className="block text-xs font-mono-tech text-slate-300 mb-1.5 uppercase">
                 Project / Aircraft Title *
               </label>
               <input
@@ -131,11 +130,11 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-100 focus:border-amber-400 focus:outline-none"
+                className="w-full skeuo-debossed rounded-none px-3.5 py-2 text-base sm:text-sm text-slate-100 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-mono-tech text-slate-300 mb-1">
+              <label className="block text-xs font-mono-tech text-slate-300 mb-1.5 uppercase">
                 Codename / Call-Sign
               </label>
               <input
@@ -143,13 +142,13 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                 value={codename}
                 onChange={(e) => setCodename(e.target.value)}
                 placeholder="e.g. PROJECT GARUDA // CFD-VORTEX"
-                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-amber-400 font-mono-tech focus:border-amber-400 focus:outline-none"
+                className="w-full skeuo-debossed rounded-none px-3.5 py-2 text-base sm:text-sm text-amber-400 font-mono-tech focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-mono-tech text-slate-300 mb-1">
+            <label className="block text-xs font-mono-tech text-slate-300 mb-1.5 uppercase">
               Executive Summary *
             </label>
             <textarea
@@ -157,24 +156,24 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               rows={2}
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:border-amber-400 focus:outline-none"
+              className="w-full skeuo-debossed rounded-none px-3.5 py-2 text-base sm:text-sm text-slate-200 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-mono-tech text-slate-300 mb-1">
+            <label className="block text-xs font-mono-tech text-slate-300 mb-1.5 uppercase">
               In-Depth Technical Details / Methodology
             </label>
             <textarea
               rows={3}
               value={details}
               onChange={(e) => setDetails(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:border-amber-400 focus:outline-none"
+              className="w-full skeuo-debossed rounded-none px-3.5 py-2 text-base sm:text-sm text-slate-200 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-mono-tech text-slate-300 mb-1">
+            <label className="block text-xs font-mono-tech text-slate-300 mb-1.5 uppercase">
               Tags (comma separated)
             </label>
             <input
@@ -182,14 +181,14 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
               value={tagsString}
               onChange={(e) => setTagsString(e.target.value)}
               placeholder="CFD, Supersonic, Delta-Wing, Pixhawk"
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-xs font-mono-tech text-slate-300 focus:border-amber-400 focus:outline-none"
+              className="w-full skeuo-debossed rounded-none px-3.5 py-2 text-base sm:text-xs font-mono-tech text-slate-300 focus:outline-none"
             />
           </div>
 
           {/* Technical Specs Array */}
           <div className="space-y-2 pt-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-mono-tech text-slate-300">
+              <label className="text-xs font-mono-tech text-slate-300 uppercase">
                 Technical Specifications (Telemetry / Dimensions / Mach)
               </label>
               <button
@@ -209,19 +208,19 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
                     value={spec.label}
                     onChange={(e) => handleUpdateSpec(i, 'label', e.target.value)}
                     placeholder="Metric (e.g. Wingspan)"
-                    className="flex-1 bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs text-slate-300 font-mono-tech"
+                    className="flex-1 skeuo-debossed rounded-none px-3 py-1.5 text-base sm:text-xs text-slate-300 font-mono-tech"
                   />
                   <input
                     type="text"
                     value={spec.value}
                     onChange={(e) => handleUpdateSpec(i, 'value', e.target.value)}
                     placeholder="Value (e.g. 2.8 meters)"
-                    className="flex-1 bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs text-amber-400 font-mono-tech"
+                    className="flex-1 skeuo-debossed rounded-none px-3 py-1.5 text-base sm:text-xs text-amber-400 font-mono-tech"
                   />
                   <button
                     type="button"
                     onClick={() => handleRemoveSpec(i)}
-                    className="p-1.5 text-slate-400 hover:text-red-400"
+                    className="w-7 h-7 rounded-none skeuo-button flex items-center justify-center text-slate-400 hover:text-red-400"
                   >
                     <Trash size={14} />
                   </button>
@@ -231,66 +230,65 @@ export const EditProjectModal: React.FC<EditProjectModalProps> = ({
           </div>
 
           {/* PDF Upload Zone */}
-          <div className="pt-2 border-t border-slate-800">
-            <label className="block text-xs font-mono-tech text-slate-300 mb-2">
+          <div className="pt-2 border-t border-slate-800/80">
+            <label className="block text-xs font-mono-tech text-slate-300 mb-2 uppercase">
               Attached Technical PDF Document
             </label>
-            <div className="p-4 rounded-lg border-2 border-dashed border-slate-700 bg-slate-900/60 flex flex-col items-center justify-center space-y-2">
-              <FilePdf size={28} className="text-amber-400" />
-              {pdfName ? (
-                <div className="text-center">
-                  <p className="text-xs font-mono-tech text-emerald-400 font-bold truncate max-w-xs">
-                    {pdfName} {pdfSize && `(${pdfSize})`}
+              <div className="p-4 rounded-none skeuo-debossed flex flex-col items-center justify-center space-y-2.5">
+                <FilePdf size={30} className="text-amber-400" />
+                {pdfName ? (
+                  <div className="text-center">
+                    <p className="text-xs font-mono-tech text-emerald-400 font-bold truncate max-w-xs">
+                      {pdfName} {pdfSize && `(${pdfSize})`}
+                    </p>
+                    <p className="text-[11px] text-slate-400">Ready for instant interactive preview</p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 font-mono-tech text-center">
+                    Attach research report, CAD brief, or flight test data (PDF)
                   </p>
-                  <p className="text-[11px] text-slate-400">Ready for instant interactive preview</p>
-                </div>
-              ) : (
-                <p className="text-xs text-slate-400 font-mono-tech text-center">
-                  Attach research report, CAD brief, or flight test data (PDF)
-                </p>
-              )}
-              <label className="cursor-pointer inline-flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-xs font-mono-tech text-slate-200 border border-slate-600 transition-colors">
-                <UploadSimple size={15} />
-                <span>{pdfName ? 'Replace PDF File' : 'Select PDF File'}</span>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-              </label>
-              {isUploading && (
-                <p className="text-xs text-amber-400 font-mono-tech animate-pulse">Uploading and caching...</p>
-              )}
-              {uploadNotice && (
-                <p className="text-xs text-emerald-400 font-mono-tech flex items-center space-x-1">
-                  <WarningCircle size={14} />
-                  <span>{uploadNotice}</span>
-                </p>
-              )}
+                )}
+                  <label className="cursor-pointer skeuo-button inline-flex items-center space-x-2 px-4 py-2 rounded-none text-xs font-mono-tech text-slate-200 uppercase tracking-wider">
+                    <UploadSimple size={15} />
+                    <span>{pdfName ? 'Replace PDF File' : 'Select PDF File'}</span>
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  {isUploading && (
+                    <p className="text-xs text-amber-400 font-mono-tech animate-pulse">Uploading and caching to IndexedDB...</p>
+                  )}
+                  {uploadNotice && (
+                    <p className="text-xs text-emerald-400 font-mono-tech flex items-center space-x-1">
+                      <WarningCircle size={14} />
+                      <span>{uploadNotice}</span>
+                    </p>
+                  )}
+              </div>
             </div>
-          </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-xs font-mono-tech text-slate-400 hover:text-slate-200 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="inline-flex items-center space-x-1.5 px-5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded font-bold text-xs font-mono-tech transition-colors"
-            >
-              <FloppyDisk size={16} weight="bold" />
-              <span>Save Changes</span>
-            </button>
-          </div>
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800/80">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-xs font-mono-tech text-slate-400 hover:text-slate-200 uppercase"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="skeuo-button-amber inline-flex items-center space-x-2 px-5 py-2.5 rounded-none font-bold text-xs font-mono-tech uppercase tracking-wider"
+              >
+                <FloppyDisk size={16} weight="bold" />
+                <span>Save Changes</span>
+              </button>
+            </div>
         </form>
       </div>
     </div>
   );
 };
-
