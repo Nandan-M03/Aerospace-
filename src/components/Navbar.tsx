@@ -116,37 +116,42 @@ export const Navbar: React.FC<NavbarProps> = ({
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 setActiveNav('home');
               }}
-                    ? 'bg-blue-600 text-white'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
-                  }`}
-          >
-            Home
-          </button>
-          
-          <button
-            onClick={() => {
-              scrollToSection('sec-projects-all');
-              setActiveNav('projects');
-            }}
-              className = {`px-3.5 py-1.5 rounded-none transition-colors cursor-pointer ${activeNav === 'projects'
+              className={`px-3.5 py-1.5 rounded-none transition-colors cursor-pointer ${
+                activeNav === 'home'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
-                }`}
-          >
-            Projects
-          </button>
+              }`}
+            >
+              Home
+            </button>
+            
+            <button
+              onClick={() => {
+                scrollToSection('sec-projects-all');
+                setActiveNav('projects');
+              }}
+              className={`px-3.5 py-1.5 rounded-none transition-colors cursor-pointer ${
+                activeNav === 'projects'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+              }`}
+            >
+              Projects
+            </button>
 
-          <button
-            onClick={() => {
-              scrollToSection('sec-research-archive');
-              setActiveNav('research');
-            }}
+            <button
+              onClick={() => {
+                scrollToSection('sec-research-archive');
+                setActiveNav('research');
+              }}
+              className={`px-3.5 py-1.5 rounded-none transition-colors cursor-pointer ${
+                activeNav === 'research'
                   ? 'bg-blue-600 text-white'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
-                }`}
-          >
-            Research
-          </button>
+              }`}
+            >
+              Research
+            </button>
 
           {/* Flight Systems Dropdown */}
           <div className="relative">
@@ -303,9 +308,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Master "NANDAN EDIT" Button (Clean, Non-Glowing) */}
           <button
             onClick={onTriggerEditMode}
-                  ? 'bg-blue-600 text-white border-blue-400'
-                  : 'bg-slate-900/90 text-slate-200 border-slate-700 hover:border-slate-500'
-                }`}
+            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-none text-xs font-mono-tech border flex items-center space-x-2 transition-all cursor-pointer ${
+              editMode
+                ? 'bg-blue-600 text-white border-blue-400'
+                : 'bg-slate-900/90 text-slate-200 border-slate-700 hover:border-slate-500'
+            }`}
           >
             {editMode ? (
               <>

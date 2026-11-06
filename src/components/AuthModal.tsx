@@ -111,10 +111,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                       if (error) setError(false);
                     }}
                     placeholder="Enter security password"
-                          ? 'border border-red-500/80 shadow-[0_0_12px_rgba(239,68,68,0.3)]'
-                          : 'focus:border-amber-400/70 focus:shadow-[0_0_10px_rgba(245,158,11,0.2)]'
-                        }`}
-              />
+                    className={`w-full pl-9 pr-10 py-2.5 bg-slate-900/90 border rounded-none text-xs text-slate-100 font-mono-tech placeholder:text-slate-600 focus:outline-none transition-all ${
+                      error
+                        ? 'border border-red-500/80 shadow-[0_0_12px_rgba(239,68,68,0.3)]'
+                        : 'border-slate-700 focus:border-amber-400/70 focus:shadow-[0_0_10px_rgba(245,158,11,0.2)]'
+                    }`}
+                  />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}

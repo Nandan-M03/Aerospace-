@@ -151,9 +151,11 @@ export const QuoteCarousel: React.FC<QuoteCarouselProps> = ({
               key={idx}
               onClick={() => setActiveQuoteIndex(idx)}
               aria-label={`Go to quote ${idx + 1}`}
-                    ? 'w-6 bg-amber-400'
-                    : 'w-2 bg-zinc-800 hover:bg-zinc-600'
-                  }`}
+              className={`h-1.5 transition-all ${
+                currentIndex === idx
+                  ? 'w-6 bg-amber-400'
+                  : 'w-2 bg-zinc-800 hover:bg-zinc-600'
+              }`}
             />
           ))}
         </div>
